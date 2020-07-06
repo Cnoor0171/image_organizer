@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python3",
+    "python.linting.pylintPath": "${workspaceFolder}/.venv/bin/black",
+    "python.formatting.provider": "black",
+}
