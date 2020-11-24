@@ -1,4 +1,0 @@
--r pip-requirements.txt
-black
-pylint
-pytest

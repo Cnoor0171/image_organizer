@@ -1,5 +1,11 @@
 {
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python3",
-    "python.linting.pylintPath": "${workspaceFolder}/.venv/bin/black",
+    // "python.linting.pylintArgs": [
+    //     "src"
+    // ],
+    "python.linting.enabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintPath": "${workspaceFolder}/.venv/bin/pylint",
     "python.formatting.provider": "black",
+    "pyright.disableLanguageServices": true,
 }

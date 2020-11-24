@@ -1,8 +1,17 @@
+# python
 __pycache__
 *.py[cod]
-
+*.egg-info
 .venv
 .pyre
 .pytest_cache
 .mypy_cache
-.pyre
+
+# sqlite
+.temp.db
+
+# environment
+.env
+
+# Sample data
+data

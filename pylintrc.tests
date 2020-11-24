@@ -1,0 +1,9 @@
+[MESSAGES CONTROL]
+good-names=f
+
+disable=logging-fstring-interpolation,
+    no-else-return,
+    line-too-long,
+    missing-module-docstring,
+    missing-function-docstring,
+    redefined-outer-name

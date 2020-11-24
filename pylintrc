@@ -1,2 +1,5 @@
 [MESSAGES CONTROL]
-disable=logging-fstring-interpolation
+good-names=f
+disable=logging-fstring-interpolation,
+    no-else-return,
+    line-too-long

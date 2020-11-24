@@ -1,37 +1,49 @@
-PYTHON = python3.7
-VENV = $(PYTHON) -m venv
+VENV ?= .venv
+PYTHON = $(if $(shell [ ! -d $(VENV) ] && echo found),python3.7,. ${VENV}/bin/activate && python3.7)
 PIP = $(PYTHON) -m pip
 PYTEST = $(PYTHON) -m pytest
 PYLINT = $(PYTHON) -m pylint
 BLACK = $(PYTHON) -m black
+PYRIGHT = pyright
 
-# Setup
-.PHONY: venv, install, install-dev, install-proj
+default:
+	echo "${PYLINT}"
 
+###################################
+### Setup
+###################################
+.PHONY: venv install install-dev
 venv:
-	$(VENV) .venv
-install: install-proj
-	$(PIP) install -r pip-requirements.txt
-install-dev: install-proj
-	$(PIP) install -r pip-requirements-dev.txt
-install-proj:
-	$(PIP) install -e .
+	$(PYTHON) -m venv .venv
+install:
+	$(PIP) install .
+install-dev:
+	$(PIP) install -e .[dev]
 
-# Tests
+###################################
+### Run
+###################################
+.PHONE: run
+run:
+	$(PYTHON) main.py
+
+###################################
+### Tests
+###################################
 .PHONY: tests tests-unit
 tests: tests-unit
 tests-unit:
 	$(PYTEST) tests/unit
 
-# Linting
-.PHONY: lint, typecheck
-lint: typecheck
-	$(PYLINT) src tests
+###################################
+### Linting
+###################################
+.PHONY: lint typecheck format format-check format-write format-diff
+lint: format-check typecheck
+	$(PYLINT) --rcfile=pylintrc src
+	$(PYLINT) --rcfile=pylintrc.tests tests
 typecheck:
-	pyright src tests
-
-# Formatting
-.PHONY: format, format-check, format-write, format-diff
+	$(PYRIGHT) src tests
 format: format-check
 format-check:
 	$(BLACK) --check src tests
@@ -39,3 +51,10 @@ format-write:
 	$(BLACK) src tests
 format-diff:
 	$(BLACK) --diff src tests
+
+###################################
+### Checks
+###################################
+# Checks
+.PHONY: pre-commit
+pre-commit: lint tests
