@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 import hashlib
 
-from hashing.file_hasher import file_hash_helper
+from organizer.hashing.file_hasher import file_hash_helper
 
 BUF_SIZE = 64 * 2 ** 10  # 64 kb
 

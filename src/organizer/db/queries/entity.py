@@ -1,10 +1,10 @@
 """Database queries related to entities"""
 
 from sqlalchemy.engine.base import Connection
-from db.schema import Entity, Type
+from organizer.db.schema import Entity, Type
 
 
-def insert_entity(conn: Connection, hash_, type_, name):
+def insert(conn: Connection, hash_, type_, name):
     """Insert new enitity, if the hash doesn't already exist. No-op if exists"""
     conn.execute(
         """
@@ -17,23 +17,49 @@ def insert_entity(conn: Connection, hash_, type_, name):
         name=name,
     )
 
-    return get_entity_by_hash(conn, hash_)
+    return get_by_hash(conn, hash_)
 
 
-def get_entity_by_hash(conn: Connection, hash_):
+def get_by_hash(conn: Connection, hash_):
     """Get entity details by its hash"""
     row = conn.execute(
         """
             SELECT
                 Id,
                 Hash,
-                Type
+                Type,
+                Name
             FROM Entities
             WHERE Hash = :hash
         """,
-        hash_,
+        hash=hash_,
     ).fetchone()
-    return Entity(id_=row.Id, hash_=row.Hash, type_=row.Type,)
+    return (
+        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name)
+        if row
+        else None
+    )
+
+
+def get_by_id(conn: Connection, id_):
+    """Get entity details by its id"""
+    row = conn.execute(
+        """
+            SELECT
+                Id,
+                Hash,
+                Type,
+                Name
+            FROM Entities
+            WHERE Id = :id
+        """,
+        id=id_,
+    ).fetchone()
+    return (
+        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name)
+        if row
+        else None
+    )
 
 
 def get_all(conn: Connection):
@@ -43,12 +69,15 @@ def get_all(conn: Connection):
             SELECT
                 Id,
                 Hash,
-                Type
+                Type,
+                Name
             FROM Entities
         """
     ).fetchall()
 
-    return [Entity(id_=row.Id, hash_=row.Hash, type_=row.Type,) for row in res]
+    return [
+        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name) for row in res
+    ]
 
 
 def get_types(conn: Connection):
@@ -63,6 +92,4 @@ def get_types(conn: Connection):
         """
     )
 
-    return [
-        Type(id_=row.Id, name=row.Name, description=row.Description,) for row in res
-    ]
+    return [Type(id_=row.Id, name=row.Name, description=row.Description) for row in res]

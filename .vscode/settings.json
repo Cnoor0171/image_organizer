@@ -7,5 +7,9 @@
     "python.linting.mypyEnabled": true,
     "python.linting.pylintPath": "${workspaceFolder}/.venv/bin/pylint",
     "python.formatting.provider": "black",
-    "pyright.disableLanguageServices": true,
+    "pyright.disableLanguageServices": false,
+
+    "files.watcherExclude": {
+        "**/*": false,
+    }
 }

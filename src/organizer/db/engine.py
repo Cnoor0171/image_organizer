@@ -1,9 +1,9 @@
 """Database interface"""
 
 import sqlalchemy
-from db.schema import initialize_db
-from db.queries import entity
-from db.queries import groupings
+from organizer.db.schema import initialize_db
+from organizer.db.queries import entity
+from organizer.db.queries import groupings
 
 
 class DBInstance:
@@ -21,11 +21,15 @@ class DBInstance:
 
     def add_enitity(self, hash_, type_, name):
         """Add a new entity"""
-        return entity.insert_entity(self.connect(), hash_, type_, name)
+        return entity.insert(self.connect(), hash_, type_, name)
 
     def get_enitities(self):
         """Get all enitities"""
         return entity.get_all(self.connect())
+
+    def get_entity_by_id(self, ent_id):
+        """Get one enitity"""
+        return entity.get_by_id(self.connect(), ent_id)
 
     def get_types(self):
         """Get all types"""

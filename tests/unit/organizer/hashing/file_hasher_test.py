@@ -1,5 +1,5 @@
 import pytest
-from hashing import file_hasher
+from organizer.hashing import file_hasher
 
 
 @pytest.fixture

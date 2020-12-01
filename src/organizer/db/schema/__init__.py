@@ -24,6 +24,7 @@ class Entity:
     id_: int
     hash_: str
     type_: int
+    name: str
 
 
 def _create_entities(conn: sqlalchemy.engine.base.Connection):

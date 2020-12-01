@@ -12,12 +12,23 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Debug Unit tests",
+            "name": "Debug Unit Tests",
             "type": "python",
             "request": "launch",
             "module": "pytest",
             "args": [
                 "tests/unit",
+                "-vv",
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug Current Test File",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${file}",
                 "-vv",
             ],
             "console": "integratedTerminal"

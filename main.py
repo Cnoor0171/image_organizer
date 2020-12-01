@@ -1,8 +1,7 @@
 """Test main script""" 
 
-import os
-
 from organizer import Organizer
+from rest_api.app import get_flask_app
 
 
 def main():
@@ -21,4 +20,10 @@ def main():
     # print(organizer.get_file_name("72ee847ea13f7fe0f15a577868855d7e4a5f4000"))
 
 if __name__ == '__main__':
-    main()
+    # main()
+    db_file_name = ".temp.db"
+    organizer_root = "data"
+    organizer = Organizer(organizer_root, db_file_name)
+    # organizer.analyze_root()
+    app = get_flask_app(organizer)
+    app.run(debug=True, port=9001)

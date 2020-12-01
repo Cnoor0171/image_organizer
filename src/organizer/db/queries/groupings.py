@@ -2,7 +2,7 @@
 
 from sqlalchemy.engine.base import Connection
 
-from db.schema import Grouping, Group
+from organizer.db.schema import Grouping, Group
 
 
 def get_groupings(conn: Connection):

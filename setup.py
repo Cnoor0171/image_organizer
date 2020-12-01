@@ -12,6 +12,10 @@ setup(
         'sqlalchemy'
     ],
     extras_require={
+        'rest_api': [
+            "flask",
+            "flask-restx",
+        ],
         'dev': [
             'pytest',
             'pytest-sugar',

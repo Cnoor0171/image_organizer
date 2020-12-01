@@ -18,7 +18,7 @@ venv:
 install:
 	$(PIP) install .
 install-dev:
-	$(PIP) install -e .[dev]
+	$(PIP) install -e .[dev,rest_api]
 
 ###################################
 ### Run
@@ -55,6 +55,5 @@ format-diff:
 ###################################
 ### Checks
 ###################################
-# Checks
 .PHONY: pre-commit
 pre-commit: lint tests

@@ -1,5 +1,5 @@
 import pytest
-from hashing import dir_hasher
+from organizer.hashing import dir_hasher
 
 
 @pytest.fixture

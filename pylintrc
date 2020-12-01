@@ -1,5 +1,12 @@
 [MESSAGES CONTROL]
 good-names=f
-disable=logging-fstring-interpolation,
+disable=
+    # allow f-string logging
+    logging-fstring-interpolation,
+    # let black wotty about these
+    line-too-long,
+    # Not useful
     no-else-return,
-    line-too-long
+    no-self-use,
+    no-else-continue,
+    too-few-public-methods,

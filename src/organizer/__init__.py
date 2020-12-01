@@ -6,9 +6,9 @@ from typing import Dict
 import os
 from pathlib import Path
 
-from db.engine import DBInstance
-from db.schema import Types
-from hashing import file_hasher, dir_hasher
+from organizer.db.engine import DBInstance
+from organizer.db.schema import Types
+from organizer.hashing import file_hasher, dir_hasher
 
 GALLERY_IDENTIFIER = ".gallery"
 IMAGE_EXTS = (".jpg", ".jpeg", ".png")
@@ -64,6 +64,10 @@ class Organizer:
     def get_entities(self):
         """Get all entities"""
         return self._db_inst.get_enitities()
+
+    def get_entity_by_id(self, entity_id):
+        """Get one entity"""
+        return self._db_inst.get_entity_by_id(entity_id)
 
     def get_types(self):
         """Get all types"""
