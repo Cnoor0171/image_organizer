@@ -1,13 +1,15 @@
 VENV ?= .venv
-PYTHON = $(if $(shell [ ! -d $(VENV) ] && echo found),python3.7,. ${VENV}/bin/activate && python3.7)
+PYTHON_VERSION=3.8
+PYTHON = $(if $(shell [ ! -d $(VENV) ] && echo found),python$(PYTHON_VERSION),. ${VENV}/bin/activate && python$(PYTHON_VERSION))
+PYRIGHT = $(if $(shell [ ! -d $(VENV) ] && echo found),pyright,. ${VENV}/bin/activate && pyright)
 PIP = $(PYTHON) -m pip
-PYTEST = $(PYTHON) -m pytest
 PYLINT = $(PYTHON) -m pylint
 BLACK = $(PYTHON) -m black
-PYRIGHT = pyright
+MYPY = $(PYTHON) -m mypy
+COVERAGE = $(PYTHON) -m coverage
 
-default:
-	echo "${PYLINT}"
+UNIT_TEST_COV_THRESH = 10
+SYS_TEST_COV_THRESH = 10
 
 ###################################
 ### Setup
@@ -16,8 +18,10 @@ default:
 venv:
 	$(PYTHON) -m venv .venv
 install:
+	$(PIP) install -U setuptools wheel
 	$(PIP) install .
 install-dev:
+	$(PIP) install -U setuptools wheel
 	$(PIP) install -e .[dev,rest_api]
 
 ###################################
@@ -30,10 +34,17 @@ run:
 ###################################
 ### Tests
 ###################################
-.PHONY: tests tests-unit
-tests: tests-unit
+.PHONY: tests tests-unit tests-system clean-coverage
+tests: coverage
+clean-coverage:
+	$(COVERAGE) erase
 tests-unit:
-	$(PYTEST) tests/unit
+	$(COVERAGE) run --append --source=src --context=unit -m pytest tests/unit
+tests-system:
+	$(COVERAGE) run --append --source=src --context=system -m pytest tests/system
+coverage: tests-unit tests-system
+	$(COVERAGE) html --fail-under=$(UNIT_TEST_COV_THRESH) --context=unit -d htmlcov-unit
+	$(COVERAGE) html --fail-under=$(SYS_TEST_COV_THRESH) --context=system -d htmlcov-system
 
 ###################################
 ### Linting
@@ -43,6 +54,7 @@ lint: format-check typecheck
 	$(PYLINT) --rcfile=pylintrc src
 	$(PYLINT) --rcfile=pylintrc.tests tests
 typecheck:
+	$(MYPY)
 	$(PYRIGHT) src tests
 format: format-check
 format-check:

@@ -17,6 +17,7 @@ setup(
             "flask-restx",
         ],
         'dev': [
+            'coverage',
             'pytest',
             'pytest-sugar',
             'pylint',
@@ -24,5 +25,5 @@ setup(
             'mypy',
             'sqlalchemy-stubs',
         ],
-    }
+    },
 )

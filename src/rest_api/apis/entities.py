@@ -41,7 +41,9 @@ EntityModel = api.model(
 
 EntityQueryParams = reqparse.RequestParser()
 EntityQueryParams.add_argument(
-    "opt-fields", type=OptFields, location="args",
+    "opt-fields",
+    type=OptFields,
+    location="args",
 )
 
 

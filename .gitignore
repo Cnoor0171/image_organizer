@@ -6,12 +6,11 @@ __pycache__
 .pyre
 .pytest_cache
 .mypy_cache
-
-# sqlite
-.temp.db
+.coverage
+htmlcov*
 
 # environment
 .env
 
-# Sample data
-data
+# scratch data
+tmp*

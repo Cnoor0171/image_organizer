@@ -6,14 +6,14 @@ from typing import Dict
 import os
 from pathlib import Path
 
-from organizer.db.engine import DBInstance
-from organizer.db.schema import Types
+from organizer.db.db_instance import DBInstance
+from organizer.db.schema import EntityTypeId
 from organizer.hashing import file_hasher, dir_hasher
 
 GALLERY_IDENTIFIER = ".gallery"
 IMAGE_EXTS = (".jpg", ".jpeg", ".png")
-GIF_EXTS = ".gif"
-VIDEO_EXTS = ".mp4"
+GIF_EXTS = (".gif",)
+VIDEO_EXTS = (".mp4",)
 
 
 class Organizer:
@@ -36,7 +36,7 @@ class Organizer:
     def _add_directory(self, directory):
         dir_path = Path(directory)
         hash_ = dir_hasher.dir_hash(dir_path.resolve())
-        type_ = Types.Gallery
+        type_ = EntityTypeId.Gallery
         self._db_inst.add_enitity(hash_, type_, dir_path.name)
         self._hash_to_file_path[hash_] = dir_path
 
@@ -53,33 +53,49 @@ class Organizer:
     def _get_file_type(file_path):
         ext = file_path.suffix.lower()
         if ext in IMAGE_EXTS:
-            return Types.Image
+            return EntityTypeId.Image
         elif ext in GIF_EXTS:
-            return Types.Gif
+            return EntityTypeId.Gif
         elif ext in VIDEO_EXTS:
-            return Types.Video
+            return EntityTypeId.Video
         else:
             return None
 
-    def get_entities(self):
+    def get_all_entities(self):
         """Get all entities"""
-        return self._db_inst.get_enitities()
+        return self._db_inst.get_all_entities()
 
-    def get_entity_by_id(self, entity_id):
-        """Get one entity"""
+    def get_entity_by_id(self, entity_id: int):
+        """Get one entity by id"""
         return self._db_inst.get_entity_by_id(entity_id)
 
-    def get_types(self):
-        """Get all types"""
-        return self._db_inst.get_types()
+    def get_entity_by_hash(self, entity_hash: str):
+        """Get one entity by hash"""
+        return self._db_inst.get_entity_by_hash(entity_hash)
 
-    def get_groupings(self):
+    def get_all_entity_types(self):
+        """Get all entity types"""
+        return self._db_inst.get_all_entity_types()
+
+    def get_entity_type_by_id(self, id_: EntityTypeId):
+        """Get one entity type by id"""
+        return self._db_inst.get_entity_type_by_id(id_)
+
+    def get_all_groupings(self):
         """Get all groupings"""
-        return self._db_inst.get_groupings()
+        return self._db_inst.get_all_groupings()
 
-    def get_groups(self):
+    def get_grouping_by_id(self, id_: int):
+        """Get one grouping by id"""
+        return self._db_inst.get_grouping_by_id(id_)
+
+    def get_all_groups(self):
         """Get all groups"""
-        return self._db_inst.get_groups()
+        return self._db_inst.get_all_groups()
+
+    def get_group_by_id(self, id_: int):
+        """Get one group by id"""
+        return self._db_inst.get_group_by_id(id_)
 
     def get_file_name(self, hash_):
         """Get file name for given hash"""
