@@ -21,6 +21,7 @@ def create_enitity_types(conn: sqlalchemy.engine.base.Connection):
 class EntityTypeId(IntEnum):
     """All supported types"""
 
+    Unkown = 0
     Image = 1
     Gif = 2
     Gallery = 3
@@ -42,6 +43,7 @@ def insert_enitity_types(conn: sqlalchemy.engine.base.Connection):
         """
             INSERT OR REPLACE INTO EntityType (Id, Name, Description)
             VALUES
+                (0, 'Unkown', 'Unkown file type'),
                 (1, 'image', 'Single Image'),
                 (2, 'gif', 'Single Gif'),
                 (3, 'gallery', 'Multiple images/files in a directory treated as a single enitity'),

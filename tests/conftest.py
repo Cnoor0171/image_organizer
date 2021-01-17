@@ -1,4 +1,5 @@
 import pathlib
+from shutil import copyfile
 
 import pytest
 
@@ -13,5 +14,7 @@ def sample_root_path():
 
 
 @pytest.fixture
-def sample_db_path():
-    return DATA_DIR / "sample.db"
+def sample_db_path(tmp_path):
+    copied_path = tmp_path / "sample.db"
+    copyfile(DATA_DIR / "sample.db", copied_path)
+    return copied_path

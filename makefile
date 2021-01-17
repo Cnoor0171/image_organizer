@@ -8,8 +8,11 @@ BLACK = $(PYTHON) -m black
 MYPY = $(PYTHON) -m mypy
 COVERAGE = $(PYTHON) -m coverage
 
-UNIT_TEST_COV_THRESH = 10
-SYS_TEST_COV_THRESH = 10
+UNIT_TEST_COV_THRESH = 50
+SYS_TEST_COV_THRESH = 50
+
+.PHONY: default
+default: coverage
 
 ###################################
 ### Setup

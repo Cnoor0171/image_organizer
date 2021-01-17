@@ -19,6 +19,7 @@ setup(
         'dev': [
             'coverage',
             'pytest',
+            'pytest-mock',
             'pytest-sugar',
             'pylint',
             'black',

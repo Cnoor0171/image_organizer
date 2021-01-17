@@ -15,9 +15,10 @@ disable=
     too-few-public-methods,
     R0801, # similar lines
 
-    # pytest specific
+    # test specific
     redefined-outer-name,
     missing-module-docstring,
     missing-function-docstring,
     missing-class-docstring,
     unused-argument,
+    protected-access,

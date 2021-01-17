@@ -13,7 +13,7 @@ from organizer.hashing import file_hasher, dir_hasher
 GALLERY_IDENTIFIER = ".gallery"
 IMAGE_EXTS = (".jpg", ".jpeg", ".png")
 GIF_EXTS = (".gif",)
-VIDEO_EXTS = (".mp4",)
+VIDEO_EXTS = (".mp4", ".flv")
 
 
 class Organizer:
@@ -26,9 +26,10 @@ class Organizer:
 
     def analyze_root(self):
         """Analyze all the files in root path and add them to db if needed"""
-        for base, _, files in os.walk(self._root_path):
+        for base, sub_dirs, files in os.walk(self._root_path):
             if GALLERY_IDENTIFIER in files:
                 self._add_directory(base)
+                sub_dirs[:] = []
             else:
                 for file_ in files:
                     self._add_file(base, file_)
@@ -44,8 +45,6 @@ class Organizer:
         file_path = Path(base, file_)
         hash_ = file_hasher.file_hash(file_path.resolve())
         type_ = self._get_file_type(file_path)
-        if not type_:
-            return
         self._db_inst.add_enitity(hash_, type_, file_)
         self._hash_to_file_path[hash_] = file_path
 
@@ -59,7 +58,7 @@ class Organizer:
         elif ext in VIDEO_EXTS:
             return EntityTypeId.Video
         else:
-            return None
+            return EntityTypeId.Unkown
 
     def get_all_entities(self):
         """Get all entities"""
@@ -97,6 +96,6 @@ class Organizer:
         """Get one group by id"""
         return self._db_inst.get_group_by_id(id_)
 
-    def get_file_name(self, hash_):
+    def get_file_name_by_hash(self, hash_):
         """Get file name for given hash"""
         return self._hash_to_file_path.get(hash_)
