@@ -2,9 +2,7 @@
 
 import sqlalchemy
 from organizer.db.schema import initialize_db, EntityTypeId
-from organizer.db.queries import entity
-from organizer.db.queries import groups
-from organizer.db.queries import groupings
+import organizer.db.queries as query
 
 
 class DBInstance:
@@ -18,49 +16,65 @@ class DBInstance:
     def add_enitity(self, hash_, type_, name):
         """Add a new entity"""
         with self._engine.connect() as conn:
-            return entity.insert(conn, hash_, type_, name)
+            return query.entity.insert(conn, hash_, type_, name)
 
-    def get_all_entities(self):
+    def get_all_entities(self, get_groups: bool = False):
         """Get all enitities"""
         with self._engine.connect() as conn:
-            return entity.get_all(conn)
+            entities = query.entity.get_all(conn)
+            if get_groups:
+                groups = query.group.get_all(conn)
+                mapping = query.group.get_all_map_from_entity(conn)
+                for ent_id, ent in entities.items():
+                    ent_groups = [
+                        groups[group_id] for group_id in mapping.get(ent_id, [])
+                    ]
+                    ent.groups = ent_groups
+            return entities
 
-    def get_entity_by_id(self, ent_id: int):
+    def get_entity_by_id(self, ent_id: int, get_groups: bool = False):
         """Get one enitity by its id"""
         with self._engine.connect() as conn:
-            return entity.get_by_id(conn, ent_id)
+            entity = query.entity.get_by_id(conn, ent_id)
+            if not entity:
+                return None
+            if get_groups:
+                group_ids = query.group.get_map_from_entity(conn, ent_id)
+                groups = query.group.get_by_ids(conn, group_ids)
+                entity.groups = list(groups.values())
+            return entity
 
     def get_entity_by_hash(self, ent_hash: str):
         """Get one enitity by its hash"""
         with self._engine.connect() as conn:
-            return entity.get_by_hash(conn, ent_hash)
+            return query.entity.get_by_hash(conn, ent_hash)
 
     def get_all_entity_types(self):
         """Get all entity types"""
         with self._engine.connect() as conn:
-            return entity.get_all_types(conn)
+            return query.entity.get_all_types(conn)
 
     def get_entity_type_by_id(self, id_: EntityTypeId):
         """Get all entity types"""
         with self._engine.connect() as conn:
-            return entity.get_type_by_id(conn, id_)
+            return query.entity.get_type_by_id(conn, id_)
 
     def get_all_groupings(self):
         """Get all groupings"""
         with self._engine.connect() as conn:
-            return groupings.get_all(conn)
+            return query.grouping.get_all(conn)
 
     def get_grouping_by_id(self, id_: int):
         """Get grouping by its id"""
         with self._engine.connect() as conn:
-            return groupings.get_by_id(conn, id_)
+            return query.grouping.get_by_id(conn, id_)
 
     def get_all_groups(self):
         """Get all groups"""
         with self._engine.connect() as conn:
-            return groups.get_all(conn)
+            return query.group.get_all(conn)
 
     def get_group_by_id(self, id_: int):
         """Get one group by id"""
         with self._engine.connect() as conn:
-            return groups.get_by_id(conn, id_)
+            return query.group.get_by_id(conn, id_)

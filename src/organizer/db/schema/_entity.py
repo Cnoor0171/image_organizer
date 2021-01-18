@@ -1,6 +1,11 @@
 """Db schema definitions for entity"""
 from dataclasses import dataclass
+from typing import Optional, List
+
 import sqlalchemy
+
+from ._entity_type import EntityTypeId
+from ._group import Group
 
 
 @dataclass
@@ -9,8 +14,9 @@ class Entity:
 
     id_: int
     hash_: str
-    type_: int
+    type_: EntityTypeId
     name: str
+    groups: Optional[List[Group]] = None
 
 
 def create_entities(conn: sqlalchemy.engine.base.Connection):
@@ -20,7 +26,7 @@ def create_entities(conn: sqlalchemy.engine.base.Connection):
             CREATE TABLE IF NOT EXISTS Entity(
                 Id INTEGER NOT NULL PRIMARY KEY,
                 Hash TEXT NOT NULL UNIQUE,
-                Type INTEGER NOT NULL REFERENCES Types(Id),
+                Type INTEGER NOT NULL REFERENCES EntityType(Id),
                 Name TEXT
             )
         """

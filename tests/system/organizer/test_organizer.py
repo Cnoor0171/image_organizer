@@ -7,7 +7,9 @@ def test_organizer_entity_scanning(sample_root_path, tmp_path):
     organizer.analyze_root()
 
     assert len(organizer.get_all_entities()) == 9
-    names = {(entity.name, entity.type_) for entity in organizer.get_all_entities()}
+    names = {
+        (entity.name, entity.type_) for entity in organizer.get_all_entities().values()
+    }
     assert names == {
         ("file1", EntityTypeId.Unkown),
         ("file2.txt", EntityTypeId.Unkown),

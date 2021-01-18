@@ -41,9 +41,9 @@ run:
 tests: coverage
 clean-coverage:
 	$(COVERAGE) erase
-tests-unit:
+tests-unit: clean-coverage
 	$(COVERAGE) run --append --source=src --context=unit -m pytest tests/unit
-tests-system:
+tests-system: clean-coverage
 	$(COVERAGE) run --append --source=src --context=system -m pytest tests/system
 coverage: tests-unit tests-system
 	$(COVERAGE) html --fail-under=$(UNIT_TEST_COV_THRESH) --context=unit -d htmlcov-unit
@@ -54,7 +54,7 @@ coverage: tests-unit tests-system
 ###################################
 .PHONY: lint typecheck format format-check format-write format-diff
 lint: format-check typecheck
-	$(PYLINT) --rcfile=pylintrc src
+	$(PYLINT) --rcfile=pylintrc organizer rest_api
 	$(PYLINT) --rcfile=pylintrc.tests tests
 typecheck:
 	$(MYPY)

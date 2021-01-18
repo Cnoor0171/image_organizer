@@ -11,39 +11,21 @@ api = Namespace("Entities", description="Entity Details")
 EntityModel = api.model(
     "Entity",
     {
-        "id": fields.Integer(readonly=True),
+        "id": fields.Integer(readonly=True, attribute="id_"),
         "name": fields.String(),
-        "type": fields.String(),
-        "groupings": fields.List(
+        "type": fields.Integer(attribute="type_"),
+        "groups": fields.List(
             fields.Nested(
                 api.model(
-                    "EntityGrouping",
+                    "EntityGroups",
                     {
-                        "id": fields.Integer(),
+                        "id": fields.Integer(attribute="id_"),
                         "name": fields.String(readonly=True),
-                        "groups": fields.List(
-                            fields.Nested(
-                                api.model(
-                                    "EntityGroupingGroup",
-                                    {
-                                        "id": fields.Integer(),
-                                        "name": fields.String(readonly=True),
-                                    },
-                                )
-                            )
-                        ),
                     },
                 )
-            )
+            ),
         ),
     },
-)
-
-EntityQueryParams = reqparse.RequestParser()
-EntityQueryParams.add_argument(
-    "opt-fields",
-    type=OptFields,
-    location="args",
 )
 
 
@@ -51,51 +33,52 @@ EntityQueryParams.add_argument(
 class EntityList(Resource):
     """Manipulate list of entities"""
 
+    GetQueryParams = reqparse.RequestParser()
+    GetQueryParams.add_argument(
+        "opt-fields",
+        type=OptFields,
+        location="args",
+        help="List of optional fields to include. Currently supports: groups",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._organizer: Organizer = current_app.config["organizer"]
+
+    @api.marshal_with(EntityModel, as_list=True)
+    @api.expect(GetQueryParams)
     def get(self):
         """List entities"""
-        return ["sadf"]
-
-    @api.expect(EntityModel)
-    @api.response(204, "No Content")
-    def post(self):
-        """Create a new task"""
-        return "", 204
+        q_params = self.GetQueryParams.parse_args()
+        q_params["opt-fields"] = q_params["opt-fields"] or OptFields()
+        get_groups = "groups" in q_params["opt-fields"].fields
+        entities = self._organizer.get_all_entities(get_groups=get_groups)
+        return list(entities.values())
 
 
 @api.route("/<int:entity_id>")
 class Entity(Resource):
     """Manipulate single entity"""
 
+    GetQueryParams = reqparse.RequestParser()
+    GetQueryParams.add_argument(
+        "opt-fields",
+        type=OptFields,
+        location="args",
+        help="List of optional fields to include. Currently supports: groups",
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._organizer: Organizer = current_app.config["organizer"]
 
-    @api.doc(
-        params={
-            "entity_id": "Enitity Id to retrieve",
-            "opt-fields": "Optional fields to include in the response",
-        }
-    )
-    @api.expect(EntityQueryParams)
     @api.marshal_with(EntityModel)
+    @api.expect(GetQueryParams)
+    @api.doc(params={"entity_id": "Enitity Id to retrieve"})
     def get(self, entity_id):
         """Get one entity by id"""
-        entity = self._organizer.get_entity_by_id(entity_id)
-        query_params = EntityQueryParams.parse_args()
-        opt_fields = query_params["opt-fields"] or OptFields()
-        if "groupings" in opt_fields.fields:
-            print("here")
-        return {
-            "id": entity.id_,
-            "name": entity.name,
-            "type": entity.type_,
-        }
-
-    def delete(self, entity_id):
-        """Delete one entity by id"""
-
-    def put(self, entity_id):
-        """Edit one entity by id, replacing all information"""
-
-    def patch(self, entity_id):
-        """Edit one entity by id, replacing only given information"""
+        q_params = self.GetQueryParams.parse_args()
+        q_params["opt-fields"] = q_params["opt-fields"] or OptFields()
+        get_groups = "groups" in q_params["opt-fields"].fields
+        entity = self._organizer.get_entity_by_id(entity_id, get_groups=get_groups)
+        return entity

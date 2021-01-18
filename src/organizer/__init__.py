@@ -60,13 +60,13 @@ class Organizer:
         else:
             return EntityTypeId.Unkown
 
-    def get_all_entities(self):
+    def get_all_entities(self, get_groups=False):
         """Get all entities"""
-        return self._db_inst.get_all_entities()
+        return self._db_inst.get_all_entities(get_groups=get_groups)
 
-    def get_entity_by_id(self, entity_id: int):
+    def get_entity_by_id(self, entity_id: int, get_groups: bool = False):
         """Get one entity by id"""
-        return self._db_inst.get_entity_by_id(entity_id)
+        return self._db_inst.get_entity_by_id(entity_id, get_groups=get_groups)
 
     def get_entity_by_hash(self, entity_hash: str):
         """Get one entity by hash"""

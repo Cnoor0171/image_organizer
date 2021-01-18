@@ -21,9 +21,11 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    db_file_name = ".temp.db"
-    organizer_root = "data"
+    db_file_name = "tmp-data/sample.db"
+    organizer_root = "tmp-data/sample_root"
     organizer = Organizer(organizer_root, db_file_name)
+    # print("analyzing root")
     # organizer.analyze_root()
+    # print("analyzed root")
     app = get_flask_app(organizer)
-    app.run(debug=True, port=9001)
+    app.run(debug=False, port=9001)

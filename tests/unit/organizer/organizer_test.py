@@ -51,13 +51,13 @@ def test_analyze_root(mocks):
 def test_get_all_entities(mocks):
     mocks.org.get_all_entities()
     assert mocks.mock_db_inst.get_all_entities.call_count == 1
-    assert mocks.mock_db_inst.get_all_entities.call_args == ((), {})
+    assert mocks.mock_db_inst.get_all_entities.call_args == ((), {'get_groups': False})
 
 
 def test_get_entity_by_id(mocks):
     mocks.org.get_entity_by_id(1234)
     assert mocks.mock_db_inst.get_entity_by_id.call_count == 1
-    assert mocks.mock_db_inst.get_entity_by_id.call_args == ((1234,), {})
+    assert mocks.mock_db_inst.get_entity_by_id.call_args == ((1234,), {'get_groups': False})
 
 
 def test_get_entity_by_hash(mocks):

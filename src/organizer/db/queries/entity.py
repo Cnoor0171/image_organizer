@@ -1,10 +1,14 @@
 """Database queries related to entities"""
 
+from typing import Optional, Dict
+
 from sqlalchemy.engine.base import Connection
 from organizer.db.schema import Entity, EntityType, EntityTypeId
 
 
-def insert(conn: Connection, hash_, type_, name):
+def insert(
+    conn: Connection, hash_: str, type_: EntityTypeId, name: str
+) -> Optional[Entity]:
     """Insert new enitity, if the hash doesn't already exist. No-op if exists"""
     conn.execute(
         """
@@ -20,7 +24,7 @@ def insert(conn: Connection, hash_, type_, name):
     return get_by_hash(conn, hash_)
 
 
-def get_by_hash(conn: Connection, hash_: str):
+def get_by_hash(conn: Connection, hash_: str) -> Optional[Entity]:
     """Get entity details by its hash"""
     row = conn.execute(
         """
@@ -35,13 +39,13 @@ def get_by_hash(conn: Connection, hash_: str):
         hash=hash_,
     ).fetchone()
     return (
-        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name)
+        Entity(id_=row.Id, hash_=row.Hash, type_=EntityTypeId(row.Type), name=row.Name)
         if row
         else None
     )
 
 
-def get_by_id(conn: Connection, id_: int):
+def get_by_id(conn: Connection, id_: int) -> Optional[Entity]:
     """Get entity details by its id"""
     row = conn.execute(
         """
@@ -56,13 +60,13 @@ def get_by_id(conn: Connection, id_: int):
         id=id_,
     ).fetchone()
     return (
-        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name)
+        Entity(id_=row.Id, hash_=row.Hash, type_=EntityTypeId(row.Type), name=row.Name)
         if row
         else None
     )
 
 
-def get_all(conn: Connection):
+def get_all(conn: Connection) -> Dict[int, Entity]:
     """Get list of all entities"""
     res = conn.execute(
         """
@@ -75,12 +79,15 @@ def get_all(conn: Connection):
         """
     ).fetchall()
 
-    return [
-        Entity(id_=row.Id, hash_=row.Hash, type_=row.Type, name=row.Name) for row in res
-    ]
+    return {
+        row.Id: Entity(
+            id_=row.Id, hash_=row.Hash, type_=EntityTypeId(row.Type), name=row.Name
+        )
+        for row in res
+    }
 
 
-def get_all_types(conn: Connection):
+def get_all_types(conn: Connection) -> Dict[EntityTypeId, EntityType]:
     """Get list of all types"""
     res = conn.execute(
         """
@@ -92,13 +99,15 @@ def get_all_types(conn: Connection):
         """
     )
 
-    return [
-        EntityType(id_=row.Id, name=row.Name, description=row.Description)
+    return {
+        EntityTypeId(row.Id): EntityType(
+            id_=EntityTypeId(row.Id), name=row.Name, description=row.Description
+        )
         for row in res
-    ]
+    }
 
 
-def get_type_by_id(conn: Connection, id_: EntityTypeId):
+def get_type_by_id(conn: Connection, id_: EntityTypeId) -> EntityType:
     """Get type by id"""
     res = conn.execute(
         """
@@ -112,4 +121,6 @@ def get_type_by_id(conn: Connection, id_: EntityTypeId):
         id=id_,
     ).fetchone()
 
-    return EntityType(id_=res.Id, name=res.Name, description=res.Description)
+    return EntityType(
+        id_=EntityTypeId(res.Id), name=res.Name, description=res.Description
+    )
