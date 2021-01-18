@@ -1,5 +1,5 @@
 """SQL queries about groups"""
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from sqlalchemy.engine.base import Connection
 from sqlalchemy import text, bindparam
@@ -31,7 +31,7 @@ def get_all(conn: Connection) -> Dict[int, Group]:
     }
 
 
-def get_by_id(conn: Connection, id_: int):
+def get_by_id(conn: Connection, id_: int) -> Optional[Group]:
     """Get group by group id"""
     res = conn.execute(
         """
@@ -40,7 +40,7 @@ def get_by_id(conn: Connection, id_: int):
                 GroupingId,
                 Name,
                 Description
-            FROM Group
+            FROM 'Group'
             WHERE Id = :id
         """,
         id=id_,
@@ -51,10 +51,10 @@ def get_by_id(conn: Connection, id_: int):
         name=res.Name,
         groupings_id=res.GroupingId,
         description=res.Description,
-    )
+    ) if res else None
 
 
-def get_by_ids(conn: Connection, ids: List[int]):
+def get_by_ids(conn: Connection, ids: List[int]) -> Dict[int, Group]:
     """Get dict of groups by group ids"""
     query = text(
         """

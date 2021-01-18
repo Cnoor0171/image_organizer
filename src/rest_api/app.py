@@ -12,5 +12,6 @@ def get_flask_app(organizer: Organizer):
     app.config["organizer"] = organizer
     app.config["RESTX_VALIDATE"] = True
     app.config["RESTX_MASK_SWAGGER"] = False
+    app.config['ERROR_404_HELP'] = False
     api.init_app(app)
     return app

@@ -1,32 +1,16 @@
 """Enitity endpoints"""
 
 from flask import current_app
-from flask_restx import Namespace, Resource, fields, reqparse
+from flask_restx import Namespace, Resource, reqparse
 
 from organizer import Organizer
 from rest_api.utils.parsers import OptFields
+from rest_api.exceptions import ErrorResponse
+from rest_api.models.entity import get_model
+from rest_api.constants.http import Status
 
 api = Namespace("Entities", description="Entity Details")
-
-EntityModel = api.model(
-    "Entity",
-    {
-        "id": fields.Integer(readonly=True, attribute="id_"),
-        "name": fields.String(),
-        "type": fields.Integer(attribute="type_"),
-        "groups": fields.List(
-            fields.Nested(
-                api.model(
-                    "EntityGroups",
-                    {
-                        "id": fields.Integer(attribute="id_"),
-                        "name": fields.String(readonly=True),
-                    },
-                )
-            ),
-        ),
-    },
-)
+EntityModel = get_model(api)
 
 
 @api.route("/")
@@ -74,11 +58,13 @@ class Entity(Resource):
 
     @api.marshal_with(EntityModel)
     @api.expect(GetQueryParams)
-    @api.doc(params={"entity_id": "Enitity Id to retrieve"})
+    @api.doc(params={"entity_id": "Enitity id to retrieve"})
     def get(self, entity_id):
         """Get one entity by id"""
         q_params = self.GetQueryParams.parse_args()
         q_params["opt-fields"] = q_params["opt-fields"] or OptFields()
         get_groups = "groups" in q_params["opt-fields"].fields
         entity = self._organizer.get_entity_by_id(entity_id, get_groups=get_groups)
+        if not entity:
+            raise ErrorResponse(Status.NOT_FOUND, f"Entity {entity_id} not found")
         return entity
